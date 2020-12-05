@@ -1,4 +1,5 @@
 from ThickBrain import Brain, Save
+import requests
 
 
 
@@ -6,13 +7,17 @@ from ThickBrain import Brain, Save
 
 
 if __name__ == '__main__':
-    save = Save("database\sentences.txt")
-    number = 50
-    thread = 50
-    a = Brain("database\dict.txt")
-    result = a.think(number,thread)
-    for i in result:
-        for j in i:
-            save.save(str(j))
+    url = 'https://etherpad.opendev.org/p/dridri/export/txt'
+    r = requests.get(url, allow_redirects=True)
 
-            
+    path = "database/dict.txt"
+    open(path, 'wb').write(r.content)
+
+
+    save = Save("database/sentences.txt")
+    number = 50000
+    for i_ in range(500):
+        a = Brain(path)
+        result = a.think(number)
+        for i in result:
+            save.save(str(i))
