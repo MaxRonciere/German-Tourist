@@ -35,20 +35,14 @@ class Bot(commands.Cog):
         self.run = False
         await ctx.send("we're cooking them")
 
-    @commands.command()
-    async def nameOn(self,ctx):
-        self.name = True
+  
 
     @commands.command()
-    async def nameOff(self,ctx):
-        self.name = False
-
-    @commands.command()
-    async def setName(self,ctx, name):
+    async def setName(self,ctx, user: discord.User):
         with open('database/name.csv', 'w', newline='') as csvfile:
                 writer = csv.writer(csvfile, delimiter=':',quotechar='|', quoting=csv.QUOTE_MINIMAL)
-                writer.writerow([str(name)])
-                print(f'set {name} as the victim id')
+                writer.writerow([str(user.id)])
+                print(f'set {user} as the victim id')
                 await ctx.send("Save me the head. Like Predator")
 
 
@@ -58,8 +52,6 @@ class Bot(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        if self.name is True:
-            print(f'{message.author.name} : {message.author.id}')
         if self.run is True:
             with open('database/name.csv', newline='') as csvfile:
                 reader = csv.reader(csvfile, delimiter=' ', quotechar='|')
@@ -67,7 +59,4 @@ class Bot(commands.Cog):
                     if [str(message.author.id)] == row:
                         channel = message.channel
                         a = self.brain.think()[0][0]
-                        print(a)
-                        await channel.send(a)
-
-                       
+                        await channel.send(f'<@{message.author.id}> {a}')
